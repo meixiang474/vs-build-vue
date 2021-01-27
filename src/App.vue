@@ -1,27 +1,50 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div class="app">
+    <h1>这个是页面内容</h1>
+    <visual-editor v-model="jsonData" :config="visualConfig"/>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+import { defineComponent } from "vue";
+import { VisualEditor } from "./packages/visual-editor";
+import {visualConfig} from './packages/visual.config'
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
+    VisualEditor,
+  },
+  data() {
+    return {
+      visualConfig,
+      jsonData: {
+        container: {
+          height: 500,
+          width: 800
+        },
+        blocks: [
+          {
+            top: 100,
+            left: 100,
+            componentKey: 'button',
+          },
+          {
+            top: 200,
+            left: 200,
+            componentKey: 'input'
+          }
+        ]
+      }
+    }
+  },
 });
 </script>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+html,
+body {
+  margin: 0;
+  padding: 0;
 }
 </style>
