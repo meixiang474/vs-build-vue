@@ -1,4 +1,5 @@
 import { onUnmounted, reactive } from 'vue';
+import { KeyboardCode } from './keyboard-code';
 
 export interface CommandExecute {
   undo?: () => void;
@@ -41,17 +42,50 @@ export function useCommander() {
     };
   };
 
-  const init = () => {
+  const keyboardEvent = (() => {
     const onKeydown = (e: KeyboardEvent) => {
-      console.log('监听到键盘事件');
+      if (document.activeElement !== document.body) {
+        return;
+      }
+      const { keyCode, shiftKey, altKey, ctrlKey, metaKey } = e;
+      const keyString = [] as string[];
+      if (ctrlKey || metaKey) {
+        keyString.push('ctrl');
+      }
+      if (shiftKey) {
+        keyString.push('shift');
+      }
+      if (altKey) {
+        keyString.push('alt');
+      }
+      keyString.push(KeyboardCode[keyCode]);
+      const keyNames = keyString.join('+');
+      state.commandArray.forEach(({ keyboard, name }) => {
+        if (!keyboard) {
+          return;
+        }
+        const keys = Array.isArray(keyboard) ? keyboard : [keyboard];
+        if (keys.indexOf(keyNames) > -1) {
+          state.commands[name]();
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      });
     };
-    window.addEventListener('keydown', onKeydown);
+    const init = () => {
+      window.addEventListener('keydown', onKeydown);
+      return () => {
+        window.removeEventListener('keydown', onKeydown);
+      };
+    };
+    return init;
+  })();
+
+  const init = () => {
     state.commandArray.forEach(
       (command) => command.init && state.destroyList.push(command.init())
     );
-    state.destroyList.push(() =>
-      window.removeEventListener('keydown', onKeydown)
-    );
+    state.destroyList.push(keyboardEvent());
   };
 
   registry({

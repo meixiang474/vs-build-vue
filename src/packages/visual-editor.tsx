@@ -156,7 +156,6 @@ export const VisualEditor = defineComponent({
       return {
         container: {
           onMousedown: (e: MouseEvent) => {
-            e.stopPropagation()
             e.preventDefault()
             methods.clearFocus()
           }
@@ -214,13 +213,15 @@ export const VisualEditor = defineComponent({
         </div>
         <div class="visual-editor-head">
           {buttons.map((btn, index) => (
-            <div
-              key={index} class="visual-editor-head-button"
-              onClick={btn.handler}
-            >
-              <i class={`iconfont ${btn.icon}`} />
-              <span>{btn.label}</span>
-            </div>
+            <el-tooltip effect="dark" content={btn.tip} placement="bottom">
+              <div
+                key={index} class="visual-editor-head-button"
+                onClick={btn.handler}
+              >
+                <i class={`iconfont ${btn.icon}`} />
+                <span>{btn.label}</span>
+              </div>
+            </el-tooltip>
           ))}
         </div>
         <div class="visual-editor-operator">
