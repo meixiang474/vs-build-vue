@@ -126,11 +126,18 @@ export const VisualEditor = defineComponent({
         dragging: false
       }
       const mousemove = (e: MouseEvent) => {
-        const durX = e.clientX - dragState.startX
-        const durY = e.clientY - dragState.startY
+        let durX = e.clientX - dragState.startX
+        let durY = e.clientY - dragState.startY
         if (!dragState.dragging) {
           dragState.dragging = true
           dragstart.emit()
+        }
+        if (e.shiftKey) {
+          if (Math.abs(durX) > Math.abs(durY)) {
+            durY = 0
+          } else {
+            durX = 0
+          }
         }
         focusData.value.focus.forEach((block, index) => {
           block.top = dragState.startPos[index].top + durY
@@ -292,9 +299,7 @@ export const VisualEditor = defineComponent({
                   config={props.config}
                   block={block}
                   key={index}
-                  {...{
-                    onMousedown: (e: MouseEvent) => focusHandler.block.onMousedown(e, block)
-                  }}
+                  onMousedown={(e: MouseEvent) => focusHandler.block.onMousedown(e, block)}
                 />
               ))}
             </div>

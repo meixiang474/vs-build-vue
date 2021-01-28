@@ -10,10 +10,13 @@ export const VisualEditorBlock = defineComponent({
     config: {
       type: Object as PropType<VisualEditorConfig>,
       required: true
+    },
+    onMousedown: {
+      type: Function as PropType<(e: MouseEvent) => void>,
+      required: true
     }
   },
-  setup(props) {
-
+  setup(props, ctx) {
     const el = ref({} as HTMLDivElement)
 
     const classes = computed(() => [
@@ -41,7 +44,7 @@ export const VisualEditorBlock = defineComponent({
       const component = props.config.componentMap[props.block.componentKey]
       const Render = component.render()
       return (
-        <div class={classes.value} style={styles.value} ref={el}>
+        <div class={classes.value} style={styles.value} ref={el} onMousedown={props.onMousedown}>
           {Render}
         </div>
       )
