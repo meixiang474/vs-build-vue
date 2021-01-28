@@ -1,0 +1,27 @@
+{
+  "container": { "height": 500, "width": 800 },
+  "blocks": [
+    {
+      "top": 121.5,
+      "left": 172,
+      "componentKey": "text",
+      "adjustPosition": false,
+      "focus": false,
+      "zIndex": 0,
+      "width": 64,
+      "height": 21,
+      "hasResize": false
+    },
+    {
+      "top": 122,
+      "left": 328,
+      "componentKey": "button",
+      "adjustPosition": false,
+      "focus": false,
+      "zIndex": 0,
+      "width": 98,
+      "height": 40,
+      "hasResize": false
+    }
+  ]
+}

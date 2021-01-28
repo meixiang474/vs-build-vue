@@ -1,8 +1,8 @@
-import { computed, defineComponent, PropType, ref } from 'vue';
+import { computed, defineComponent, PropType, ref, reactive } from 'vue';
 import { useModel } from './utils/useModel';
 import { VisualEditorBlock } from './visual-editor-block';
 import './visual-editor.scss'
-import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorModelValue } from './visual-editor.util';
+import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorMarkLines, VisualEditorModelValue } from './visual-editor.util';
 import { useVisualCommand } from './utils/visual.command'
 import { createEvent } from './plugins/event';
 import { $$dialog } from './utils/dialog-service';
@@ -43,6 +43,10 @@ export const VisualEditor = defineComponent({
         focus,
         unFocus
       }
+    })
+
+    const state = reactive({
+      selectBlock: null as null | VisualEditorBlockData
     })
 
     const dragstart = createEvent()
@@ -119,32 +123,71 @@ export const VisualEditor = defineComponent({
     })()
 
     const blockDragger = (() => {
+      const mark = reactive({
+        x: null as null | number,
+        y: null as null | number
+      })
       let dragState = {
         startX: 0,
         startY: 0,
+        startLeft: 0,
+        startTop: 0,
         startPos: [] as { left: number; top: number }[],
-        dragging: false
+        dragging: false,
+        markLines: {} as VisualEditorMarkLines
       }
       const mousemove = (e: MouseEvent) => {
-        let durX = e.clientX - dragState.startX
-        let durY = e.clientY - dragState.startY
         if (!dragState.dragging) {
           dragState.dragging = true
           dragstart.emit()
         }
+        let { clientX: moveX, clientY: moveY } = e
+        const { startX, startY } = dragState
         if (e.shiftKey) {
-          if (Math.abs(durX) > Math.abs(durY)) {
-            durY = 0
+          if (Math.abs(moveX - startX) > Math.abs(moveY - startY)) {
+            moveY = startY
           } else {
-            durX = 0
+            moveX = startX
           }
         }
+
+        const currentLeft = dragState.startLeft + moveX - startX
+        const currentTop = dragState.startTop + moveY - startY
+
+        const currentMark = {
+          x: null as null | number,
+          y: null as null | number
+        }
+
+        for (let i = 0; i < dragState.markLines.y.length; i++) {
+          const { top, showTop } = dragState.markLines.y[i]
+          if (Math.abs(top - currentTop) < 5) {
+            moveY = top + startY - dragState.startTop
+            currentMark.y = showTop
+            break
+          }
+        }
+        for (let i = 0; i < dragState.markLines.x.length; i++) {
+          const { left, showLeft } = dragState.markLines.x[i]
+          if (Math.abs(left - currentLeft) < 5) {
+            moveX = left + startX - dragState.startLeft
+            currentMark.x = showLeft
+            break
+          }
+        }
+        mark.x = currentMark.x
+        mark.y = currentMark.y
+
+        const durX = moveX - startX
+        const durY = moveY - startY
         focusData.value.focus.forEach((block, index) => {
           block.top = dragState.startPos[index].top + durY
           block.left = dragState.startPos[index].left + durX
         })
       }
       const mouseup = () => {
+        mark.x = null
+        mark.y = null
         document.removeEventListener('mousemove', mousemove)
         document.removeEventListener('mouseup', mouseup)
         if (dragState.dragging) {
@@ -155,13 +198,35 @@ export const VisualEditor = defineComponent({
         dragState = {
           startX: e.clientX,
           startY: e.clientY,
+          startLeft: state.selectBlock!.left,
+          startTop: state.selectBlock!.top,
           startPos: focusData.value.focus.map(({ top, left }) => ({ top, left })),
-          dragging: false
+          dragging: false,
+          markLines: (() => {
+            const { focus, unFocus } = focusData.value
+            const { top, left, width, height } = state.selectBlock!
+            const lines: VisualEditorMarkLines = { x: [], y: [] }
+            unFocus.forEach(block => {
+              const { top: t, left: l, width: w, height: h } = block
+              lines.y.push({ top: t, showTop: t })
+              lines.y.push({ top: t + h, showTop: t + h })
+              lines.y.push({ top: t + h / 2 - height / 2, showTop: t + h / 2 })
+              lines.y.push({ top: t - height, showTop: t })
+              lines.y.push({ top: t + h - height, showTop: t + h })
+
+              lines.x.push({ left: l, showLeft: l })
+              lines.x.push({ left: l + w, showLeft: l + w })
+              lines.x.push({ left: l + w / 2 - width / 2, showLeft: l + w / 2 })
+              lines.x.push({ left: l - width, showLeft: l })
+              lines.x.push({ left: l + w - width, showLeft: l + w })
+            })
+            return lines
+          })()
         }
         document.addEventListener('mousemove', mousemove)
         document.addEventListener('mouseup', mouseup)
       }
-      return { mousedown }
+      return { mousedown, mark }
     })()
 
     const focusHandler = (() => {
@@ -174,6 +239,7 @@ export const VisualEditor = defineComponent({
             }
             if (!e.shiftKey) {
               methods.clearFocus()
+              state.selectBlock = null
             }
           }
         },
@@ -193,6 +259,7 @@ export const VisualEditor = defineComponent({
                 methods.clearFocus(block)
               }
             }
+            state.selectBlock = block
             blockDragger.mousedown(e)
           }
         }
@@ -302,6 +369,12 @@ export const VisualEditor = defineComponent({
                   onMousedown={(e: MouseEvent) => focusHandler.block.onMousedown(e, block)}
                 />
               ))}
+              {blockDragger.mark.y !== null && (
+                <div class="visual-editor-mark-line-y" style={{ top: `${blockDragger.mark.y}px` }}></div>
+              )}
+              {blockDragger.mark.x !== null && (
+                <div class="visual-editor-mark-line-x" style={{ left: `${blockDragger.mark.x}px` }}></div>
+              )}
             </div>
           </div>
         </div>

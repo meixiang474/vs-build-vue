@@ -5,6 +5,9 @@ export interface VisualEditorBlockData {
   adjustPosition: boolean;
   focus: boolean;
   zIndex: number;
+  width: number;
+  height: number;
+  hasResize: boolean;
 }
 
 export interface VisualEditorModelValue {
@@ -20,6 +23,11 @@ export interface VisualEditorComponent {
   label: string;
   preview: () => JSX.Element;
   render: () => JSX.Element;
+}
+
+export interface VisualEditorMarkLines {
+  x: { left: number; showLeft: number }[];
+  y: { top: number; showTop: number }[];
 }
 
 export function createNewBlock({
@@ -38,6 +46,9 @@ export function createNewBlock({
     adjustPosition: true,
     focus: false,
     zIndex: 0,
+    width: 0,
+    height: 0,
+    hasResize: false,
   };
 }
 

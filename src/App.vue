@@ -9,6 +9,7 @@
 import { defineComponent } from "vue";
 import { VisualEditor } from "./packages/visual-editor";
 import {visualConfig} from './packages/visual.config'
+import jsonData from './data.json';
 
 export default defineComponent({
   name: "App",
@@ -18,26 +19,7 @@ export default defineComponent({
   data() {
     return {
       visualConfig,
-      jsonData: {
-        container: {
-          height: 500,
-          width: 800
-        },
-        blocks: [
-          {
-            top: 100,
-            left: 100,
-            componentKey: 'button',
-            zIndex: 0
-          },
-          {
-            top: 200,
-            left: 200,
-            componentKey: 'input',
-            zIndex: 0
-          }
-        ]
-      }
+      jsonData
     }
   },
 });
