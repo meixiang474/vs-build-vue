@@ -6,7 +6,7 @@ export function useVisualCommand({ focusData, updateBlocks, dataModel, dragstart
   focusData: {
     value: { focus: VisualEditorBlockData[]; unFocus: VisualEditorBlockData[] };
   };
-  updateBlocks: (blocks: VisualEditorBlockData[]) => void;
+  updateBlocks: (blocks?: VisualEditorBlockData[]) => void;
   dataModel: { value: VisualEditorModelValue };
   dragstart: { on: (cb: () => void) => void; off: (cb: () => void) => void };
   dragend: { on: (cb: () => void) => void; off: (cb: () => void) => void };
@@ -86,11 +86,74 @@ export function useVisualCommand({ focusData, updateBlocks, dataModel, dragstart
       }
     }
   })
+
+  commander.registry({
+    name: 'placeTop',
+    keyboard: 'ctrl+up',
+    execute: () => {
+      const data = {
+        before: deepcopy(dataModel.value.blocks || []),
+        after: deepcopy((() => {
+          const { focus, unFocus } = focusData.value
+          const maxZIndex = unFocus.reduce((memo, current) => {
+            return Math.max(memo, current.zIndex)
+          }, -Infinity) + 1
+          focus.forEach(block => {
+            block.zIndex = maxZIndex
+          })
+          return deepcopy(dataModel.value.blocks || [])
+        })())
+      }
+      return {
+        redo: () => {
+          updateBlocks(deepcopy(data.after))
+        },
+        undo: () => {
+          updateBlocks(deepcopy(data.before))
+        }
+      }
+    }
+  })
+  commander.registry({
+    name: 'placeBottom',
+    keyboard: 'ctrl+down',
+    execute: () => {
+      const data = {
+        before: deepcopy(dataModel.value.blocks),
+        after: deepcopy((() => {
+          const { focus, unFocus } = focusData.value
+          let minZIndex = unFocus.reduce((memo, current) => {
+            return Math.min(memo, current.zIndex)
+          }, Infinity) - 1
+          if (minZIndex < 0) {
+            const dur = Math.abs(minZIndex)
+            unFocus.forEach(block => block.zIndex += dur)
+            minZIndex = 0
+          }
+          focus.forEach(block => {
+            block.zIndex = minZIndex
+          })
+          return deepcopy(dataModel.value.blocks)
+        })())
+      }
+      return {
+        redo: () => {
+          updateBlocks(deepcopy(data.after))
+        },
+        undo: () => {
+          updateBlocks(deepcopy(data.before))
+        }
+      }
+    }
+  })
+
   commander.init()
   return {
     undo: () => commander.state.commands.undo(),
     redo: () => commander.state.commands.redo(),
     delete: () => commander.state.commands.delete(),
-    clear: () => commander.state.commands.clear()
+    clear: () => commander.state.commands.clear(),
+    placeTop: () => commander.state.commands.placeTop(),
+    placeBottom: () => commander.state.commands.placeBottom(),
   }
 }
