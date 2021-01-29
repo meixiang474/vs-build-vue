@@ -39,6 +39,7 @@ export function createNewBlock({
   top: number;
   left: number;
 }): VisualEditorBlockData {
+  let width: number, height: number;
   return {
     top,
     left,

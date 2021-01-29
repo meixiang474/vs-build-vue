@@ -77,6 +77,7 @@ export const VisualEditor = defineComponent({
           ...dataModel.value,
           blocks
         }
+        console.log(dataModel.value.blocks)
       },
       showBlockData: (block: VisualEditorBlockData) => {
         $$dialog.textarea(JSON.stringify(block), '节点数据', { editReadonly: true })
