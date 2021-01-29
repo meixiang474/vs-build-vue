@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { VisualEditor } from "./packages/visual-editor";
+import { VisualEditor } from './packages';
 import {visualConfig} from './packages/visual.config'
 import jsonData from './data.json';
 

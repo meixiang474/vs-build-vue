@@ -7,6 +7,7 @@ import { useVisualCommand } from './utils/visual.command'
 import { createEvent } from './plugins/event';
 import { $$dialog } from './utils/dialog-service';
 import { ElMessageBox } from 'element-plus'
+import { $$dropdown } from './utils/dropdown-service'
 
 export const VisualEditor = defineComponent({
   props: {
@@ -23,7 +24,6 @@ export const VisualEditor = defineComponent({
     'update:modelValue': (val?: VisualEditorModelValue) => true
   },
   setup(props, ctx) {
-
     const dataModel = useModel(() => props.modelValue, val => ctx.emit('update:modelValue', val))
 
     const containerRef = ref({} as HTMLDivElement)
@@ -77,8 +77,30 @@ export const VisualEditor = defineComponent({
           ...dataModel.value,
           blocks
         }
+      },
+      showBlockData: (block: VisualEditorBlockData) => {
+        $$dialog.textarea(JSON.stringify(block), '节点数据', { editReadonly: true })
+      },
+      importBlockData: async (block: VisualEditorBlockData) => {
+        const text = await $$dialog.textarea('', '请输入节点JSON字符串')
+        try {
+          const data = JSON.parse(text || '') as VisualEditorBlockData
+          commander.updateBlock(data, block)
+        } catch (e) {
+          console.error(e)
+        }
       }
     }
+
+    const commander = useVisualCommand({
+      focusData,
+      updateBlocks: methods.updateBlocks,
+      dataModel,
+      dragstart,
+      dragend
+    })
+
+
 
     const menuDragger = (() => {
       let current = null as null | VisualEditorComponent
@@ -229,6 +251,28 @@ export const VisualEditor = defineComponent({
       return { mousedown, mark }
     })()
 
+
+
+    // 其他的一些事件处理 
+    const handler = {
+      onContextmenuBlock: (e: MouseEvent, block: VisualEditorBlockData) => {
+        e.preventDefault()
+        console.log(1)
+        $$dropdown({
+          reference: e,
+          content: () => (
+            <>
+              <dropdown-option label="置顶节点" icon="icon-place-top" {...{ onClick: commander.placeTop }} />
+              <dropdown-option label="置低节点" icon="icon-place-bottom" {...{ onClick: commander.placeBottom }} />
+              <dropdown-option label="删除节点" icon="icon-delete" {...{ onClick: commander.delete }} />
+              <dropdown-option label="查看数据" icon="icon-browse" {...{ onClick: () => methods.showBlockData(block) }} />
+              <dropdown-option label="导入节点" icon="icon-import" {...{ onClick: () => methods.importBlockData(block) }} />
+            </>
+          )
+        })
+      }
+    }
+
     const focusHandler = (() => {
       return {
         container: {
@@ -245,7 +289,6 @@ export const VisualEditor = defineComponent({
         },
         block: {
           onMousedown: (e: MouseEvent, block: VisualEditorBlockData) => {
-            e.stopPropagation()
             e.preventDefault()
             if (e.shiftKey) {
               if (focusData.value.focus.length <= 1) {
@@ -266,13 +309,7 @@ export const VisualEditor = defineComponent({
       }
     })()
 
-    const commander = useVisualCommand({
-      focusData,
-      updateBlocks: methods.updateBlocks,
-      dataModel,
-      dragstart,
-      dragend
-    })
+
 
     const buttons = [
       {
@@ -367,6 +404,9 @@ export const VisualEditor = defineComponent({
                   block={block}
                   key={index}
                   onMousedown={(e: MouseEvent) => focusHandler.block.onMousedown(e, block)}
+                  {...{
+                    onContextmenu: (e: MouseEvent) => handler.onContextmenuBlock(e, block)
+                  }}
                 />
               ))}
               {blockDragger.mark.y !== null && (
