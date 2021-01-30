@@ -1,4 +1,4 @@
-import { computed, defineComponent, onMounted, PropType, ref } from 'vue';
+import { computed, defineComponent, getCurrentInstance, onMounted, PropType, ref } from 'vue';
 import { VisualEditorBlockData, VisualEditorConfig } from './visual-editor.util'
 
 export const VisualEditorBlock = defineComponent({
@@ -16,9 +16,9 @@ export const VisualEditorBlock = defineComponent({
       required: true
     }
   },
-  setup(props, ctx) {
+  setup(props) {
     const el = ref({} as HTMLDivElement)
-
+    const ctx = getCurrentInstance()!
     const classes = computed(() => [
       'visual-editor-block',
       { 'visual-editor-block-focus': props.block.focus }

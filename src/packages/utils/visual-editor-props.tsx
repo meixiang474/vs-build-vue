@@ -5,10 +5,10 @@ export enum VisualEditorPropsType {
 }
 
 export type VisualEditorProps = {
-  type: VisualEditorPropsType,
-  label: string
+  type: VisualEditorPropsType;
+  label: string;
 } & {
-  options?: VisualEditorSelectOptions
+  options?: VisualEditorSelectOptions;
 }
 
 export function createEditorInputProp(label: string): VisualEditorProps {

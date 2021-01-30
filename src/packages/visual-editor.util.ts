@@ -9,6 +9,7 @@ export interface VisualEditorBlockData {
   width: number;
   height: number;
   hasResize: boolean;
+  props: Record<string, any>;
 }
 
 export interface VisualEditorModelValue {
@@ -52,6 +53,7 @@ export function createNewBlock({
     width: 0,
     height: 0,
     hasResize: false,
+    props: {},
   };
 }
 

@@ -8,6 +8,7 @@ import { createEvent } from './plugins/event';
 import { $$dialog } from './utils/dialog-service';
 import { ElMessageBox } from 'element-plus'
 import { $$dropdown } from './utils/dropdown-service'
+import { VisualOperatorEditor } from './utils/visual-editor-operator';
 
 export const VisualEditor = defineComponent({
   props: {
@@ -46,7 +47,7 @@ export const VisualEditor = defineComponent({
     })
 
     const state = reactive({
-      selectBlock: null as null | VisualEditorBlockData
+      selectBlock: undefined as undefined | VisualEditorBlockData
     })
 
     const dragstart = createEvent()
@@ -284,7 +285,7 @@ export const VisualEditor = defineComponent({
             }
             if (!e.shiftKey) {
               methods.clearFocus()
-              state.selectBlock = null
+              state.selectBlock = undefined
             }
           }
         },
@@ -390,7 +391,7 @@ export const VisualEditor = defineComponent({
           })}
         </div>
         <div class="visual-editor-operator">
-          visual-editor-operator
+          <VisualOperatorEditor block={state.selectBlock} config={props.config} dataModel={dataModel} />
         </div>
         <div class="visual-editor-body">
           <div class="visual-editor-content">
