@@ -1,27 +1,41 @@
 {
-  "container": { "height": 500, "width": 800 },
+  "container": { "height": 200, "width": 800 },
   "blocks": [
     {
-      "top": 121.5,
-      "left": 172,
+      "top": 68.5,
+      "left": 190,
       "componentKey": "text",
       "adjustPosition": false,
       "focus": false,
       "zIndex": 0,
       "width": 64,
       "height": 21,
-      "hasResize": false
+      "hasResize": false,
+      "props": {}
     },
     {
-      "top": 122,
-      "left": 328,
+      "top": 99,
+      "left": 352,
       "componentKey": "button",
       "adjustPosition": false,
       "focus": false,
       "zIndex": 0,
       "width": 98,
       "height": 40,
-      "hasResize": false
+      "hasResize": false,
+      "props": {}
+    },
+    {
+      "top": 89.5,
+      "left": 513.5,
+      "componentKey": "input",
+      "adjustPosition": false,
+      "focus": false,
+      "zIndex": 0,
+      "width": 191,
+      "height": 41,
+      "hasResize": false,
+      "props": {}
     }
   ]
 }

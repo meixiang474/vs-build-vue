@@ -99,7 +99,7 @@ export const VisualEditor = defineComponent({
       updateBlocks: methods.updateBlocks,
       dataModel,
       dragstart,
-      dragend
+      dragend,
     })
 
 
@@ -391,7 +391,13 @@ export const VisualEditor = defineComponent({
           })}
         </div>
         <div class="visual-editor-operator">
-          <VisualOperatorEditor block={state.selectBlock} config={props.config} dataModel={dataModel} />
+          <VisualOperatorEditor
+            block={state.selectBlock}
+            config={props.config}
+            dataModel={dataModel}
+            updateBlock={commander.updateBlock}
+            updateModelValue={commander.updateModelValue}
+          />
         </div>
         <div class="visual-editor-body">
           <div class="visual-editor-content">
