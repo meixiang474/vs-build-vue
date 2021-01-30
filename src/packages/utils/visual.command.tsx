@@ -158,7 +158,6 @@ export function useVisualCommand({ focusData, updateBlocks, dataModel, dragstart
           const index = (dataModel.value.blocks || []).indexOf(oldBlock)
           if (index > -1) {
             blocks.splice(index, 1, newBlock)
-            console.log(blocks)
           }
           return deepcopy(blocks)
         })()

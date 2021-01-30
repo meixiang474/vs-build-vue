@@ -1,3 +1,4 @@
+import { VisualEditorProps } from './utils/visual-editor-props';
 export interface VisualEditorBlockData {
   componentKey: string;
   top: number;
@@ -23,6 +24,7 @@ export interface VisualEditorComponent {
   label: string;
   preview: () => JSX.Element;
   render: () => JSX.Element;
+  props?: Record<string, VisualEditorProps>;
 }
 
 export interface VisualEditorMarkLines {
