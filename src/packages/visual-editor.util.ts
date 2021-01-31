@@ -24,7 +24,7 @@ export interface VisualEditorComponent {
   key: string;
   label: string;
   preview: () => JSX.Element;
-  render: () => JSX.Element;
+  render: (data: { props: any }) => JSX.Element;
   props?: Record<string, VisualEditorProps>;
 }
 
@@ -63,7 +63,15 @@ export function createVisualEditorConfig() {
   return {
     componentMap,
     componentList,
-    registry: (key: string, component: Omit<VisualEditorComponent, 'key'>) => {
+    registry: <Props extends Record<string, VisualEditorProps>>(
+      key: string,
+      component: {
+        label: string;
+        preview: () => JSX.Element;
+        render: (data: { props: { [k in keyof Props]: any } }) => JSX.Element;
+        props?: Props;
+      }
+    ) => {
       const comp = { ...component, key };
       componentList.push(comp);
       componentMap[key] = comp;

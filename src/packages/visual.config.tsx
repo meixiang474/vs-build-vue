@@ -6,7 +6,7 @@ export const visualConfig = createVisualEditorConfig()
 visualConfig.registry('text', {
   label: '文本',
   preview: () => '预览文本',
-  render: () => '渲染文本',
+  render: ({ props }) => <span style={{ color: props.color, fontSize: props.size }}>{props.text || '默认文本'}</span>,
   props: {
     text: createEditorInputProp('显示文本'),
     color: createEditorColorProp('字体颜色'),
@@ -20,16 +20,17 @@ visualConfig.registry('text', {
 visualConfig.registry('button', {
   label: '按钮',
   preview: () => <ElButton>按钮</ElButton>,
-  render: () => <ElButton>渲染按钮</ElButton>,
+  render: ({ props }) => <ElButton type={props.type} size={props.size}>{props.text || '按钮'}</ElButton>,
   props: {
     text: createEditorInputProp('显示文本'),
     type: createEditorSelectProp('按钮类型', [
-      { label: 'primary', val: '基础' },
-      { label: 'success', val: '成功' },
-      { label: 'warning', val: '警告' },
-      { label: 'danger', val: '危险' },
-      { label: 'info', val: '提示' },
-      { label: 'text', val: '文本' },
+      { val: '', label: '默认' },
+      { val: 'primary', label: '基础' },
+      { val: 'success', label: '成功' },
+      { val: 'warning', label: '警告' },
+      { val: 'danger', label: '危险' },
+      { val: 'info', label: '提示' },
+      { val: 'text', label: '文本' },
     ]),
     size: createEditorSelectProp('按钮大小', [
       { label: '默认', val: '' },

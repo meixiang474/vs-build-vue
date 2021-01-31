@@ -156,6 +156,7 @@ export function useVisualCommand({ focusData, updateBlocks, dataModel, dragstart
         after: (() => {
           blocks = [...blocks]
           const index = (dataModel.value.blocks || []).indexOf(oldBlock)
+          console.log(index)
           if (index > -1) {
             blocks.splice(index, 1, newBlock)
           }

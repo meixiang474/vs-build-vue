@@ -45,9 +45,9 @@ export const VisualEditor = defineComponent({
         unFocus
       }
     })
-
+    const selectIndex = ref(-1)
     const state = reactive({
-      selectBlock: undefined as undefined | VisualEditorBlockData
+      selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value])
     })
 
     const dragstart = createEvent()
@@ -78,7 +78,6 @@ export const VisualEditor = defineComponent({
           ...dataModel.value,
           blocks
         }
-        console.log(dataModel.value.blocks)
       },
       showBlockData: (block: VisualEditorBlockData) => {
         $$dialog.textarea(JSON.stringify(block), '节点数据', { editReadonly: true })
@@ -229,8 +228,13 @@ export const VisualEditor = defineComponent({
           markLines: (() => {
             const { focus, unFocus } = focusData.value
             const { top, left, width, height } = state.selectBlock!
-            const lines: VisualEditorMarkLines = { x: [], y: [] }
-            unFocus.forEach(block => {
+            const lines: VisualEditorMarkLines = { x: [], y: [] };
+            [...unFocus, {
+              top: 0,
+              left: 0,
+              width: dataModel.value.container.width,
+              height: dataModel.value.container.height
+            }].forEach(block => {
               const { top: t, left: l, width: w, height: h } = block
               lines.y.push({ top: t, showTop: t })
               lines.y.push({ top: t + h, showTop: t + h })
@@ -259,7 +263,6 @@ export const VisualEditor = defineComponent({
     const handler = {
       onContextmenuBlock: (e: MouseEvent, block: VisualEditorBlockData) => {
         e.preventDefault()
-        console.log(1)
         $$dropdown({
           reference: e,
           content: () => (
@@ -285,12 +288,12 @@ export const VisualEditor = defineComponent({
             }
             if (!e.shiftKey) {
               methods.clearFocus()
-              state.selectBlock = undefined
+              selectIndex.value = -1
             }
           }
         },
         block: {
-          onMousedown: (e: MouseEvent, block: VisualEditorBlockData) => {
+          onMousedown: (e: MouseEvent, block: VisualEditorBlockData, index: number) => {
             e.preventDefault()
             if (e.shiftKey) {
               if (focusData.value.focus.length <= 1) {
@@ -304,7 +307,7 @@ export const VisualEditor = defineComponent({
                 methods.clearFocus(block)
               }
             }
-            state.selectBlock = block
+            selectIndex.value = index
             blockDragger.mousedown(e)
           }
         }
@@ -411,7 +414,7 @@ export const VisualEditor = defineComponent({
                   config={props.config}
                   block={block}
                   key={index}
-                  onMousedown={(e: MouseEvent) => focusHandler.block.onMousedown(e, block)}
+                  onMousedown={(e: MouseEvent) => focusHandler.block.onMousedown(e, block, index)}
                   {...{
                     onContextmenu: (e: MouseEvent) => handler.onContextmenuBlock(e, block)
                   }}
