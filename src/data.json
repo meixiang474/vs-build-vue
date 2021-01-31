@@ -36,6 +36,23 @@
       "height": 41,
       "hasResize": false,
       "props": {}
+    },
+    {
+      "top": 125.5,
+      "left": 79.5,
+      "componentKey": "select",
+      "adjustPosition": false,
+      "focus": false,
+      "zIndex": 0,
+      "width": 223,
+      "height": 41,
+      "hasResize": false,
+      "props": {
+        "options": [
+          { "label": "123", "value": "123" },
+          { "label": "321", "value": "321" }
+        ]
+      }
     }
   ]
 }

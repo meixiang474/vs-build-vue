@@ -1,6 +1,6 @@
 import { createVisualEditorConfig } from './visual-editor.util'
-import { ElButton, ElInput } from 'element-plus'
-import { createEditorInputProp, createEditorColorProp, createEditorSelectProp } from './utils/visual-editor-props'
+import { ElButton, ElInput, ElSelect, ElOption } from 'element-plus'
+import { createEditorInputProp, createEditorColorProp, createEditorSelectProp, createEditorTableProp } from './utils/visual-editor-props'
 
 export const visualConfig = createVisualEditorConfig()
 visualConfig.registry('text', {
@@ -40,6 +40,26 @@ visualConfig.registry('button', {
     ])
   }
 })
+
+visualConfig.registry('select', {
+  label: '下拉框',
+  preview: () => <ElSelect />,
+  render: ({ props }) => <ElSelect>
+    {(props.options || []).map((opt: { label: string; value: string }, index: number) => (
+      <ElOption label={opt.label} value={opt.value} key={index} />
+    ))}
+  </ElSelect>,
+  props: {
+    options: createEditorTableProp('下拉选项', {
+      options: [
+        { label: '显示值', field: 'label' },
+        { label: '绑定值', field: 'value' },
+      ],
+      showKey: 'label'
+    })
+  }
+})
+
 visualConfig.registry('input', {
   label: '输入框',
   preview: () => <ElInput />,

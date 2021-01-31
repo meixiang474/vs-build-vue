@@ -47,8 +47,16 @@ export const VisualEditor = defineComponent({
     })
     const selectIndex = ref(-1)
     const state = reactive({
-      selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value])
+      selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value]),
+      editing: true
     })
+
+    const classes = computed(() => [
+      'visual-editor',
+      {
+        'visual-editor-editing': state.editing
+      }
+    ])
 
     const dragstart = createEvent()
     const dragend = createEvent()
@@ -262,6 +270,7 @@ export const VisualEditor = defineComponent({
     // 其他的一些事件处理 
     const handler = {
       onContextmenuBlock: (e: MouseEvent, block: VisualEditorBlockData) => {
+        if (!state.editing) return
         e.preventDefault()
         $$dropdown({
           reference: e,
@@ -282,6 +291,7 @@ export const VisualEditor = defineComponent({
       return {
         container: {
           onMousedown: (e: MouseEvent) => {
+            if (!state.editing) return
             e.preventDefault()
             if (e.currentTarget !== e.target) {
               return
@@ -294,6 +304,7 @@ export const VisualEditor = defineComponent({
         },
         block: {
           onMousedown: (e: MouseEvent, block: VisualEditorBlockData, index: number) => {
+            if (!state.editing) return
             e.preventDefault()
             if (e.shiftKey) {
               if (focusData.value.focus.length <= 1) {
@@ -321,6 +332,16 @@ export const VisualEditor = defineComponent({
         label: '撤销', icon: 'icon-back', handler: commander.undo, tip: 'ctrl+z'
       },
       { label: '重做', icon: 'icon-forward', handler: commander.redo, tip: 'ctrl+y, ctrl+shift+z' },
+      {
+        label: () => state.editing ? '预览' : '编辑',
+        icon: () => state.editing ? 'icon-browse' : 'icon-edit',
+        handler: () => {
+          if (state.editing) {
+            methods.clearFocus()
+          }
+          state.editing = !state.editing
+        }
+      },
       {
         label: '导入',
         icon: 'icon-import',
@@ -363,7 +384,7 @@ export const VisualEditor = defineComponent({
     ]
 
     return () => (
-      <div class="visual-editor">
+      <div class={classes.value}>
         <div class="visual-editor-menu">
           {props.config.componentList.map((component) => <div
             class="visual-editor-menu-item"
@@ -377,13 +398,15 @@ export const VisualEditor = defineComponent({
         </div>
         <div class="visual-editor-head">
           {buttons.map((btn, index) => {
+            const label = typeof btn.label === 'function' ? btn.label() : btn.label
+            const icon = typeof btn.icon === 'function' ? btn.icon() : btn.icon
             const content = (
               <div
                 key={index} class="visual-editor-head-button"
                 onClick={btn.handler}
               >
-                <i class={`iconfont ${btn.icon}`} />
-                <span>{btn.label}</span>
+                <i class={`iconfont ${icon}`} />
+                <span>{label}</span>
               </div>
             )
             return btn.tip ? (

@@ -3,6 +3,7 @@ import { ElColorPicker, ElForm, ElFormItem, ElInput, ElInputNumber, ElSelect, El
 import { defineComponent, PropType, reactive, watch } from 'vue';
 import { VisualEditorBlockData, VisualEditorConfig, VisualEditorModelValue } from '../visual-editor.util';
 import { VisualEditorProps, VisualEditorPropsType } from './visual-editor-props';
+import { TablePropEditor } from '../component/table-prop-editor'
 
 export const VisualOperatorEditor = defineComponent({
   props: {
@@ -71,12 +72,15 @@ export const VisualOperatorEditor = defineComponent({
               <ElOption label={opt.label} value={opt.val} />
             ))}
           </ElSelect>
+        ),
+        [VisualEditorPropsType.tabel]: () => (
+          <TablePropEditor
+            v-model={state.editData[propName]}
+            propConfig={propConfig}
+          />
         )
       }
     }
-
-
-
 
     return () => {
       let content: JSX.Element | null = null

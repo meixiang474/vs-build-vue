@@ -1,7 +1,8 @@
 export enum VisualEditorPropsType {
   input = 'input',
   color = 'color',
-  select = 'select'
+  select = 'select',
+  tabel = 'table'
 }
 
 export type VisualEditorProps = {
@@ -9,6 +10,8 @@ export type VisualEditorProps = {
   label: string;
 } & {
   options?: VisualEditorSelectOptions;
+} & {
+  table?: VisualEditorTableOption;
 }
 
 export function createEditorInputProp(label: string): VisualEditorProps {
@@ -34,5 +37,21 @@ export function createEditorSelectProp(label: string, options: VisualEditorSelec
     type: VisualEditorPropsType.select,
     label,
     options
+  }
+}
+
+export type VisualEditorTableOption = {
+  options: {
+    label: string;
+    field: string;
+  }[];
+  showKey: string;
+}
+
+export function createEditorTableProp(label: string, option: VisualEditorTableOption) {
+  return {
+    type: VisualEditorPropsType.tabel,
+    label,
+    table: option
   }
 }
