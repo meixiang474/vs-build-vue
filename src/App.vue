@@ -1,7 +1,10 @@
 <template>
   <div class="app">
     <h1>这个是页面内容</h1>
-    <visual-editor v-model="jsonData" :config="visualConfig"/>
+    <visual-editor v-model="jsonData" :config="visualConfig" :formData="formData"/>
+    <div :style="{textAlign: 'center'}">
+      {{JSON.stringify(formData)}}
+    </div>
   </div>
 </template>
 
@@ -19,7 +22,10 @@ export default defineComponent({
   data() {
     return {
       visualConfig,
-      jsonData
+      jsonData,
+      formData: {
+        username: 'admin'
+      }
     }
   },
 });
@@ -30,5 +36,8 @@ html,
 body {
   margin: 0;
   padding: 0;
+}
+.app {
+  padding-bottom: 300px;
 }
 </style>

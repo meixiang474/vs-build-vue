@@ -12,7 +12,10 @@ export const VisualEditorBlock = defineComponent({
       required: true
     },
     onMousedown: {
-      type: Function as PropType<(e: MouseEvent) => void>,
+      type: Function as PropType<(e: MouseEvent) => void>
+    },
+    formData: {
+      type: Object as PropType<Record<string, any>>,
       required: true
     }
   },
@@ -44,7 +47,18 @@ export const VisualEditorBlock = defineComponent({
 
     return () => {
       const component = props.config.componentMap[props.block.componentKey]
-      const Render = component.render({ props: props.block.props })
+      const formData = props.formData
+      const Render = component.render({
+        props: props.block.props || {}, model: Object.entries(props.block.model || {}).reduce((memo, [propName, modelName]) => {
+          memo[propName] = {
+            [propName === 'default' ? 'modelValue' : propName]: props.formData[modelName],
+            [propName === 'default' ? 'onUpdate:modelValue' : 'onChange']: (val: any) => {
+              formData[modelName] = val
+            }
+          }
+          return memo
+        }, {} as Record<string, any>)
+      })
       return (
         <div class={classes.value} style={styles.value} ref={el} onMousedown={props.onMousedown}>
           {Render}

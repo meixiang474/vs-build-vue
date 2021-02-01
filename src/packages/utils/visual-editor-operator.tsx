@@ -41,17 +41,14 @@ export const VisualOperatorEditor = defineComponent({
           })
         } else {
           // 编辑block属性
-          props.updateBlock({
-            ...props.block,
-            props: state.editData
-          }, props.block)
+          props.updateBlock(state.editData, props.block)
         }
       },
       reset: () => {
         if (!props.block) {
           state.editData = deepcopy(props.dataModel.value.container)
         } else {
-          state.editData = deepcopy(props.block.props || {})
+          state.editData = deepcopy(props.block)
         }
       }
     }
@@ -61,13 +58,13 @@ export const VisualOperatorEditor = defineComponent({
     const renderEditor = (propName: string, propConfig: VisualEditorProps) => {
       return {
         [VisualEditorPropsType.input]: () => (
-          < ElInput v-model={state.editData[propName]} />
+          < ElInput v-model={state.editData.props[propName]} />
         ),
         [VisualEditorPropsType.color]: () => (
-          <ElColorPicker v-model={state.editData[propName]} />
+          <ElColorPicker v-model={state.editData.props[propName]} />
         ),
         [VisualEditorPropsType.select]: () => (
-          <ElSelect v-model={state.editData[propName]}>
+          <ElSelect v-model={state.editData.props[propName]}>
             {propConfig.options!.map(opt => (
               <ElOption label={opt.label} value={opt.val} />
             ))}
@@ -75,7 +72,7 @@ export const VisualOperatorEditor = defineComponent({
         ),
         [VisualEditorPropsType.tabel]: () => (
           <TablePropEditor
-            v-model={state.editData[propName]}
+            v-model={state.editData.props[propName]}
             propConfig={propConfig}
           />
         )
@@ -83,9 +80,9 @@ export const VisualOperatorEditor = defineComponent({
     }
 
     return () => {
-      let content: JSX.Element | null = null
+      const content = [] as JSX.Element[]
       if (!props.block) {
-        content = (
+        content.push((
           <>
             <ElFormItem label="容器宽度">
               <ElInputNumber {...{ step: 100 }} v-model={state.editData.width} />
@@ -94,24 +91,37 @@ export const VisualOperatorEditor = defineComponent({
               <ElInputNumber {...{ step: 100 }} v-model={state.editData.height} />
             </ElFormItem>
           </>
-        )
+        ))
       } else {
         const { componentKey } = props.block
         const component = props.config.componentMap[componentKey]
-        if (component && component.props) {
-          content = (
-            <>
-              {
-                Object.entries(component.props).map(([propName, propConfig]) => {
-                  return (
-                    <ElFormItem label={propConfig.label} key={propName}>
-                      {renderEditor(propName, propConfig)[propConfig.type]()}
-                    </ElFormItem>
-                  )
-                })
-              }
-            </>
-          )
+        if (component) {
+          if (component.props) {
+            content.push((
+              <>
+                {
+                  Object.entries(component.props).map(([propName, propConfig]) => {
+                    return (
+                      <ElFormItem label={propConfig.label} key={propName}>
+                        {renderEditor(propName, propConfig)[propConfig.type]()}
+                      </ElFormItem>
+                    )
+                  })
+                }
+              </>
+            ))
+          }
+          if (component.model) {
+            content.push(
+              <>
+                {Object.entries(component.model).map(([moduleName, label]) => (
+                  <ElFormItem label={label}>
+                    <ElInput v-model={state.editData.model[moduleName]} />
+                  </ElFormItem>
+                ))}
+              </>
+            )
+          }
         }
       }
       return (

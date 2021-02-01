@@ -2,8 +2,8 @@
   "container": { "height": 200, "width": 800 },
   "blocks": [
     {
-      "top": 68.5,
-      "left": 190,
+      "top": 54.5,
+      "left": 91,
       "componentKey": "text",
       "adjustPosition": false,
       "focus": false,
@@ -11,48 +11,47 @@
       "width": 64,
       "height": 21,
       "hasResize": false,
-      "props": {}
+      "props": {},
+      "model": {}
     },
     {
-      "top": 99,
-      "left": 352,
+      "top": 51,
+      "left": 280,
       "componentKey": "button",
       "adjustPosition": false,
       "focus": false,
       "zIndex": 0,
-      "width": 98,
+      "width": 70,
       "height": 40,
       "hasResize": false,
-      "props": {}
+      "props": {},
+      "model": {}
     },
     {
-      "top": 89.5,
-      "left": 513.5,
-      "componentKey": "input",
-      "adjustPosition": false,
-      "focus": false,
-      "zIndex": 0,
-      "width": 191,
-      "height": 41,
-      "hasResize": false,
-      "props": {}
-    },
-    {
-      "top": 125.5,
-      "left": 79.5,
+      "top": 91.5,
+      "left": 11,
       "componentKey": "select",
       "adjustPosition": false,
       "focus": false,
       "zIndex": 0,
-      "width": 223,
+      "width": 224,
       "height": 41,
       "hasResize": false,
-      "props": {
-        "options": [
-          { "label": "123", "value": "123" },
-          { "label": "321", "value": "321" }
-        ]
-      }
+      "props": {},
+      "model": {}
+    },
+    {
+      "top": 44.5,
+      "left": 487.5,
+      "componentKey": "input",
+      "adjustPosition": false,
+      "focus": false,
+      "zIndex": 0,
+      "width": 171,
+      "height": 41,
+      "hasResize": false,
+      "props": {},
+      "model": {}
     }
   ]
 }

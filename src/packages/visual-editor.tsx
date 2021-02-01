@@ -19,6 +19,10 @@ export const VisualEditor = defineComponent({
     config: {
       type: Object as PropType<VisualEditorConfig>,
       required: true
+    },
+    formData: {
+      type: Object as PropType<Record<string, any>>,
+      required: true
     }
   },
   emits: {
@@ -48,7 +52,8 @@ export const VisualEditor = defineComponent({
     const selectIndex = ref(-1)
     const state = reactive({
       selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value]),
-      editing: true
+      editing: true,  // 当前是否正在编辑
+      preview: false   // 当前是否关闭了编辑器
     })
 
     const classes = computed(() => [
@@ -70,6 +75,9 @@ export const VisualEditor = defineComponent({
     // })
 
     const methods = {
+      openEdit: () => {
+        state.preview = false
+      },
       clearFocus: (block?: VisualEditorBlockData) => {
         let blocks = dataModel.value.blocks || []
         if (blocks.length === 0) return
@@ -380,79 +388,106 @@ export const VisualEditor = defineComponent({
         label: '清空',
         icon: 'icon-reset',
         handler: () => commander.clear(),
+      },
+      {
+        label: '关闭',
+        icon: 'icon-close',
+        handler: () => {
+          methods.clearFocus()
+          state.preview = true
+        }
       }
     ]
 
     return () => (
-      <div class={classes.value}>
-        <div class="visual-editor-menu">
-          {props.config.componentList.map((component) => <div
-            class="visual-editor-menu-item"
-            draggable
-            onDragend={menuDragger.dragend}
-            onDragstart={(e) => menuDragger.dragstart(e, component)}
-          >
-            <span class="visual-editor-menu-item-label">{component.label}</span>
-            {component.preview()}
-          </div>)}
+      <>
+        <div class="visual-editor-container"
+          style={containerStyles.value}
+        >
+          {dataModel.value.blocks && dataModel.value.blocks.map((block, index) => (
+            <VisualEditorBlock
+              config={props.config}
+              block={block}
+              key={index}
+              formData={props.formData}
+            />
+          ))}
+          <div class="vue-visual-container-edit-button" onClick={methods.openEdit}>
+            <i class="iconfont icon-edit" />
+            <span>编辑组件</span>
+          </div>
         </div>
-        <div class="visual-editor-head">
-          {buttons.map((btn, index) => {
-            const label = typeof btn.label === 'function' ? btn.label() : btn.label
-            const icon = typeof btn.icon === 'function' ? btn.icon() : btn.icon
-            const content = (
-              <div
-                key={index} class="visual-editor-head-button"
-                onClick={btn.handler}
-              >
-                <i class={`iconfont ${icon}`} />
-                <span>{label}</span>
-              </div>
-            )
-            return btn.tip ? (
-              <el-tooltip effect="dark" content={btn.tip} placement="bottom">
-                {content}
-              </el-tooltip>
-            ) : content
-          })}
-        </div>
-        <div class="visual-editor-operator">
-          <VisualOperatorEditor
-            block={state.selectBlock}
-            config={props.config}
-            dataModel={dataModel}
-            updateBlock={commander.updateBlock}
-            updateModelValue={commander.updateModelValue}
-          />
-        </div>
-        <div class="visual-editor-body">
-          <div class="visual-editor-content">
-            <div class="visual-editor-container"
-              style={containerStyles.value}
-              ref={containerRef}
-              {...focusHandler.container}
+        <div class={classes.value} v-show={!state.preview}>
+          <div class="visual-editor-menu">
+            {props.config.componentList.map((component) => <div
+              class="visual-editor-menu-item"
+              draggable
+              onDragend={menuDragger.dragend}
+              onDragstart={(e) => menuDragger.dragstart(e, component)}
             >
-              {dataModel.value.blocks && dataModel.value.blocks.map((block, index) => (
-                <VisualEditorBlock
-                  config={props.config}
-                  block={block}
-                  key={index}
-                  onMousedown={(e: MouseEvent) => focusHandler.block.onMousedown(e, block, index)}
-                  {...{
-                    onContextmenu: (e: MouseEvent) => handler.onContextmenuBlock(e, block)
-                  }}
-                />
-              ))}
-              {blockDragger.mark.y !== null && (
-                <div class="visual-editor-mark-line-y" style={{ top: `${blockDragger.mark.y}px` }}></div>
-              )}
-              {blockDragger.mark.x !== null && (
-                <div class="visual-editor-mark-line-x" style={{ left: `${blockDragger.mark.x}px` }}></div>
-              )}
+              <span class="visual-editor-menu-item-label">{component.label}</span>
+              {component.preview()}
+            </div>)}
+          </div>
+          <div class="visual-editor-head">
+            {buttons.map((btn, index) => {
+              const label = typeof btn.label === 'function' ? btn.label() : btn.label
+              const icon = typeof btn.icon === 'function' ? btn.icon() : btn.icon
+              const content = (
+                <div
+                  key={index} class="visual-editor-head-button"
+                  onClick={btn.handler}
+                >
+                  <i class={`iconfont ${icon}`} />
+                  <span>{label}</span>
+                </div>
+              )
+              return btn.tip ? (
+                <el-tooltip effect="dark" content={btn.tip} placement="bottom">
+                  {content}
+                </el-tooltip>
+              ) : content
+            })}
+          </div>
+          <div class="visual-editor-operator">
+            <VisualOperatorEditor
+              block={state.selectBlock}
+              config={props.config}
+              dataModel={dataModel}
+              updateBlock={commander.updateBlock}
+              updateModelValue={commander.updateModelValue}
+            />
+          </div>
+          <div class="visual-editor-body">
+            <div class="visual-editor-content">
+              <div class="visual-editor-container"
+                style={containerStyles.value}
+                ref={containerRef}
+                {...focusHandler.container}
+              >
+                {dataModel.value.blocks && dataModel.value.blocks.map((block, index) => (
+                  <VisualEditorBlock
+                    config={props.config}
+                    block={block}
+                    key={index}
+                    formData={props.formData}
+                    onMousedown={(e: MouseEvent) => focusHandler.block.onMousedown(e, block, index)}
+                    {...{
+                      onContextmenu: (e: MouseEvent) => handler.onContextmenuBlock(e, block)
+                    }}
+                  />
+                ))}
+                {blockDragger.mark.y !== null && (
+                  <div class="visual-editor-mark-line-y" style={{ top: `${blockDragger.mark.y}px` }}></div>
+                )}
+                {blockDragger.mark.x !== null && (
+                  <div class="visual-editor-mark-line-x" style={{ left: `${blockDragger.mark.x}px` }}></div>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </>
     )
   }
 })

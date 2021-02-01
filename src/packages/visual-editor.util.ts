@@ -10,6 +10,7 @@ export interface VisualEditorBlockData {
   height: number;
   hasResize: boolean;
   props: Record<string, any>;
+  model: Record<string, string>;
 }
 
 export interface VisualEditorModelValue {
@@ -24,8 +25,9 @@ export interface VisualEditorComponent {
   key: string;
   label: string;
   preview: () => JSX.Element;
-  render: (data: { props: any }) => JSX.Element;
+  render: (data: { props: any; model: any }) => JSX.Element;
   props?: Record<string, VisualEditorProps>;
+  model?: Record<string, string>;
 }
 
 export interface VisualEditorMarkLines {
@@ -42,7 +44,6 @@ export function createNewBlock({
   top: number;
   left: number;
 }): VisualEditorBlockData {
-  let width: number, height: number;
   return {
     top,
     left,
@@ -54,6 +55,7 @@ export function createNewBlock({
     height: 0,
     hasResize: false,
     props: {},
+    model: {},
   };
 }
 
@@ -63,13 +65,25 @@ export function createVisualEditorConfig() {
   return {
     componentMap,
     componentList,
-    registry: <Props extends Record<string, VisualEditorProps>>(
+    registry: <
+      _,
+      Props extends Record<string, VisualEditorProps> = {},
+      Model extends Record<string, string> = {}
+    >(
       key: string,
       component: {
         label: string;
         preview: () => JSX.Element;
-        render: (data: { props: { [k in keyof Props]: any } }) => JSX.Element;
+        render: (data: {
+          props: { [k in keyof Props]: any };
+          model: Partial<
+            {
+              [k in keyof Model]: any;
+            }
+          >;
+        }) => JSX.Element;
         props?: Props;
+        model?: Model;
       }
     ) => {
       const comp = { ...component, key };
