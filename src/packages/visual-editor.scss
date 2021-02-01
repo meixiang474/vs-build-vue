@@ -36,6 +36,10 @@ $primary: #409eff; // 主色调
     bottom: 0;
     background-color: white;
     z-index: 9;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 300px;
+
     .visual-editor-menu-item {
       position: relative;
       width: calc(100% - 20px);

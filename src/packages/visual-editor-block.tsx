@@ -49,11 +49,14 @@ export const VisualEditorBlock = defineComponent({
       const component = props.config.componentMap[props.block.componentKey]
       const formData = props.formData
       const Render = component.render({
-        props: props.block.props || {}, model: Object.entries(props.block.model || {}).reduce((memo, [propName, modelName]) => {
+        props: props.block.props || {}, model: Object.keys(component.model || {}).reduce((memo, propName) => {
+          const modelName = !props.block.model ? null : props.block.model[propName]
           memo[propName] = {
-            [propName === 'default' ? 'modelValue' : propName]: props.formData[modelName],
+            [propName === 'default' ? 'modelValue' : propName]: modelName ? props.formData[modelName] : null,
             [propName === 'default' ? 'onUpdate:modelValue' : 'onChange']: (val: any) => {
-              formData[modelName] = val
+              if (modelName) {
+                formData[modelName] = val
+              }
             }
           }
           return memo

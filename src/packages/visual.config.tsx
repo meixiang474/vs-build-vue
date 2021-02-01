@@ -1,6 +1,8 @@
 import { createVisualEditorConfig } from './visual-editor.util'
 import { ElButton, ElInput, ElSelect, ElOption } from 'element-plus'
 import { createEditorInputProp, createEditorColorProp, createEditorSelectProp, createEditorTableProp } from './utils/visual-editor-props'
+import { NumberRange } from './component/numberRange'
+import './visual.config.scss'
 
 export const visualConfig = createVisualEditorConfig()
 visualConfig.registry('text', {
@@ -71,5 +73,22 @@ visualConfig.registry('input', {
   render: ({ model }) => <ElInput {...model.default} />,
   model: {
     default: '绑定字段'
+  }
+})
+
+visualConfig.registry('numberRange', {
+  label: "数字范围输入框",
+  preview: () => <NumberRange style={{ width: '100%' }} />,
+  render: ({ model }) => {
+    return <NumberRange {...{
+      start: model.start.start,
+      'onUpdate:start': model.start.onChange,
+      end: model.end.end,
+      'onUpdate:end': model.end.onChange
+    }} />
+  },
+  model: {
+    start: '起始绑定值字段',
+    end: '截止绑定字段'
   }
 })
