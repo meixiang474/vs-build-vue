@@ -2,13 +2,15 @@ import { computed, defineComponent, PropType, ref, reactive } from 'vue';
 import { useModel } from './utils/useModel';
 import { VisualEditorBlock } from './visual-editor-block';
 import './visual-editor.scss'
-import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorMarkLines, VisualEditorModelValue } from './visual-editor.util';
+import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorMarkLines, VisualEditorModelValue, VisualDragProvider } from './visual-editor.util';
 import { useVisualCommand } from './utils/visual.command'
 import { createEvent } from './plugins/event';
 import { $$dialog } from './utils/dialog-service';
 import { ElMessageBox } from 'element-plus'
 import { $$dropdown } from './utils/dropdown-service'
 import { VisualOperatorEditor } from './utils/visual-editor-operator';
+
+
 
 export const VisualEditor = defineComponent({
   props: {
@@ -68,6 +70,8 @@ export const VisualEditor = defineComponent({
 
     const dragstart = createEvent()
     const dragend = createEvent()
+
+    VisualDragProvider.provide({ dragstart, dragend })
 
     // dragstart.on(() => {
     //   console.log('dragstart')
@@ -401,6 +405,7 @@ export const VisualEditor = defineComponent({
         }
       }
     ]
+
 
     return () => (
       <>

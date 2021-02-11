@@ -1,4 +1,4 @@
-import { VisualEditorBlockData, VisualEditorComponent } from '@/packages/visual-editor.util';
+import { VisualDragProvider, VisualEditorBlockData, VisualEditorComponent } from '@/packages/visual-editor.util';
 import { defineComponent, PropType } from '@vue/runtime-core';
 
 enum Direction {
@@ -20,6 +20,8 @@ export const BlockResizer = defineComponent({
   },
   setup(props) {
 
+    const { dragstart, dragend } = VisualDragProvider.inject()
+
     const onMousedown = (() => {
 
       let data = {
@@ -29,7 +31,8 @@ export const BlockResizer = defineComponent({
         startHeight: 0,
         startLeft: 0,
         startTop: 0,
-        direction: {} as { horizontal: Direction; vertical: Direction }
+        direction: {} as { horizontal: Direction; vertical: Direction },
+        dragging: false
       }
 
       const mousedown = (e: MouseEvent, direction: { horizontal: Direction; vertical: Direction }) => {
@@ -44,11 +47,12 @@ export const BlockResizer = defineComponent({
           startLeft: props.block.left,
           startTop: props.block.top,
           direction,
+          dragging: false
         }
       }
 
       const mousemove = (e: MouseEvent) => {
-        const { startX, startY, startWidth, startHeight, direction, startLeft, startTop } = data
+        const { startX, startY, startWidth, startHeight, direction, startLeft, startTop, dragging } = data
         let { clientX: moveX, clientY: moveY } = e
         if (direction.horizontal === Direction.center) {
           moveX = startX
@@ -72,11 +76,19 @@ export const BlockResizer = defineComponent({
         block.width = width
         block.height = height
         block.hasResize = true
+        if (!dragging) {
+          data.dragging = true
+          dragstart.emit()
+        }
       }
 
       const mouseup = () => {
         document.body.removeEventListener('mousemove', mousemove)
         document.body.removeEventListener('mouseup', mouseup)
+        if (data.dragging) {
+          dragend.emit()
+          data.dragging = false
+        }
       }
 
       return mousedown

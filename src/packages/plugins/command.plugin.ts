@@ -123,6 +123,8 @@ export function useCommander() {
     },
   });
 
+  registry;
+
   onUnmounted(() => {
     state.destroyList.forEach((fn) => fn && fn());
   });

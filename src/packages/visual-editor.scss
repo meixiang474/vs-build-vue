@@ -28,6 +28,25 @@ $primary: #409eff; // 主色调
     right: 0;
     background-color: rgba(0, 0, 0, 0.1);
   }
+  & > .visual-editor-menu,
+  & > .visual-editor-body > .visual-editor-content,
+  & > .visual-editor-operator {
+    //自动移滚动条样式
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 1em;
+      background-color: rgba(black, 0.15);
+    }
+
+    &::-webkit-scrollbar-track {
+      border-radius: 1em;
+      background-color: transparent;
+    }
+  }
   & > .visual-editor-menu {
     position: absolute;
     width: $menuSize;

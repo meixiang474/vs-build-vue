@@ -55,7 +55,7 @@ export function useVisualCommand({ focusData, updateBlocks, dataModel, dragstart
       }
     },
     execute() {
-      const before = this.data.before
+      const before = deepcopy(this.data.before)
       const after = deepcopy(dataModel.value.blocks || [])
       return {
         redo: () => {
@@ -187,6 +187,19 @@ export function useVisualCommand({ focusData, updateBlocks, dataModel, dragstart
         },
         undo: () => {
           dataModel.value = deepcopy(data.before)
+        }
+      }
+    }
+  })
+
+  commander.registry({
+    name: 'selectAll',
+    followQueue: false,
+    keyboard: 'ctrl+a',
+    execute: () => {
+      return {
+        redo: () => {
+          (dataModel.value.blocks || []).forEach(block => block.focus = true)
         }
       }
     }
