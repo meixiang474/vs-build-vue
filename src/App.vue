@@ -1,7 +1,13 @@
 <template>
   <div class="app">
     <h1>这个是页面内容</h1>
-    <visual-editor v-model="jsonData" :config="visualConfig" :formData="formData"/>
+    <visual-editor v-model="jsonData" :config="visualConfig" :formData="formData">
+      <template #subBtn> 
+        <el-button>
+          自定义按钮
+        </el-button>
+      </template>
+    </visual-editor>
     <div :style="{textAlign: 'center'}">
       {{JSON.stringify(formData)}}
     </div>

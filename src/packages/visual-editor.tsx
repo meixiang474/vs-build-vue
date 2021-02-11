@@ -410,6 +410,7 @@ export const VisualEditor = defineComponent({
               block={block}
               key={index}
               formData={props.formData}
+              slots={ctx.slots}
             />
           ))}
           <div class="vue-visual-container-edit-button" onClick={methods.openEdit}>
@@ -472,6 +473,7 @@ export const VisualEditor = defineComponent({
                     key={index}
                     formData={props.formData}
                     onMousedown={(e: MouseEvent) => focusHandler.block.onMousedown(e, block, index)}
+                    slots={ctx.slots}
                     {...{
                       onContextmenu: (e: MouseEvent) => handler.onContextmenuBlock(e, block)
                     }}

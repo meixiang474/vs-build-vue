@@ -1,4 +1,4 @@
-import { computed, defineComponent, getCurrentInstance, onMounted, PropType, ref } from 'vue';
+import { computed, defineComponent, getCurrentInstance, onMounted, PropType, ref, Slot } from 'vue';
 import { BlockResizer } from './component/blockResizer';
 import { VisualEditorBlockData, VisualEditorConfig } from './visual-editor.util'
 
@@ -17,6 +17,10 @@ export const VisualEditorBlock = defineComponent({
     },
     formData: {
       type: Object as PropType<Record<string, any>>,
+      required: true
+    },
+    slots: {
+      type: Object as PropType<Record<string, Slot | undefined>>,
       required: true
     }
   },
@@ -49,31 +53,35 @@ export const VisualEditorBlock = defineComponent({
     return () => {
       const component = props.config.componentMap[props.block.componentKey]
       const formData = props.formData
-      const Render = component.render({
-        props: props.block.props || {},
-        model: Object.keys(component.model || {}).reduce((memo, propName) => {
-          const modelName = !props.block.model ? null : props.block.model[propName]
-          memo[propName] = {
-            [propName === 'default' ? 'modelValue' : propName]: modelName ? props.formData[modelName] : null,
-            [propName === 'default' ? 'onUpdate:modelValue' : 'onChange']: (val: any) => {
-              if (modelName) {
-                formData[modelName] = val
+      let render: any
+      if (props.block.slotName && props.slots[props.block.slotName]) {
+        render = props.slots[props.block.slotName]!()
+      } else {
+        render = component.render({
+          props: props.block.props || {},
+          model: Object.keys(component.model || {}).reduce((memo, propName) => {
+            const modelName = !props.block.model ? null : props.block.model[propName]
+            memo[propName] = {
+              [propName === 'default' ? 'modelValue' : propName]: modelName ? props.formData[modelName] : null,
+              [propName === 'default' ? 'onUpdate:modelValue' : 'onChange']: (val: any) => {
+                if (modelName) {
+                  formData[modelName] = val
+                }
               }
             }
-          }
-          return memo
-        }, {} as Record<string, any>),
-        size: props.block.hasResize ? {
-          width: props.block.width,
-          height: props.block.height
-        } : {}
-      })
-
+            return memo
+          }, {} as Record<string, any>),
+          size: props.block.hasResize ? {
+            width: props.block.width,
+            height: props.block.height
+          } : {}
+        })
+      }
       const { width, height } = component.resize || {}
 
       return (
         <div class={classes.value} style={styles.value} ref={el} onMousedown={props.onMousedown}>
-          {Render}
+          {render}
           {props.block.focus && (width || height) && <BlockResizer block={props.block} component={component} />}
         </div>
       )
