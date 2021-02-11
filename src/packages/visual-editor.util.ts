@@ -30,6 +30,7 @@ export interface VisualEditorComponent {
     props: any;
     model: any;
     size: { width?: number; height?: number };
+    custom: Record<string, any>;
   }) => JSX.Element;
   props?: Record<string, VisualEditorProps>;
   model?: Record<string, string>;
@@ -88,6 +89,7 @@ export function createVisualEditorConfig() {
             }
           >;
           size: { width?: number; height?: number };
+          custom: Record<string, any>;
         }) => JSX.Element;
         props?: Props;
         model?: Model;

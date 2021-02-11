@@ -22,6 +22,9 @@ export const VisualEditorBlock = defineComponent({
     slots: {
       type: Object as PropType<Record<string, Slot | undefined>>,
       required: true
+    },
+    customProps: {
+      type: Object as PropType<Record<string, any>>
     }
   },
   setup(props) {
@@ -74,7 +77,8 @@ export const VisualEditorBlock = defineComponent({
           size: props.block.hasResize ? {
             width: props.block.width,
             height: props.block.height
-          } : {}
+          } : {},
+          custom: !props.block.slotName || !props.customProps ? {} : props.customProps[props.block.slotName]
         })
       }
       const { width, height } = component.resize || {}
