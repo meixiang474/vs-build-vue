@@ -1,14 +1,13 @@
 .number-range {
   display: inline-flex;
-  width: 370px;
   min-height: 40px;
   align-items: stretch;
-  input {
-    flex: 1;
+  & > input {
+    width: calc(50% - 1em);
   }
-  span {
-    margin: 0 8px;
-    display: inline-flex;
-    align-items: center;
+
+  & > span {
+    text-align: center;
+    width: 2em;
   }
 }

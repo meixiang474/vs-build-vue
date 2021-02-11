@@ -17,12 +17,19 @@ visualConfig.registry('text', {
       { label: '18px', val: '18px' },
       { label: '24px', val: '24px' }
     ])
-  }
+  },
 })
 visualConfig.registry('button', {
   label: '按钮',
   preview: () => <ElButton>按钮</ElButton>,
-  render: ({ props }) => <ElButton type={props.type} size={props.size}>{props.text || '按钮'}</ElButton>,
+  render: ({ props, size }) => (
+    <ElButton type={props.type} size={props.size} style={{
+      height: `${size.height}px`,
+      width: `${size.width}px`
+    }}>
+      {props.text || '按钮'}
+    </ElButton>
+  ),
   props: {
     text: createEditorInputProp('显示文本'),
     type: createEditorSelectProp('按钮类型', [
@@ -40,6 +47,10 @@ visualConfig.registry('button', {
       { label: '小', val: 'small' },
       { label: '极小', val: 'mini' },
     ])
+  },
+  resize: {
+    height: true,
+    width: true
   }
 })
 
@@ -70,25 +81,31 @@ visualConfig.registry('select', {
 visualConfig.registry('input', {
   label: '输入框',
   preview: () => <ElInput />,
-  render: ({ model }) => <ElInput {...model.default} />,
+  render: ({ model, size }) => <ElInput {...model.default} style={{ width: `${size.width}px` }} />,
   model: {
     default: '绑定字段'
+  },
+  resize: {
+    width: true
   }
 })
 
 visualConfig.registry('numberRange', {
   label: "数字范围输入框",
   preview: () => <NumberRange style={{ width: '100%' }} />,
-  render: ({ model }) => {
+  render: ({ model, size }) => {
     return <NumberRange {...{
       start: model.start.start,
       'onUpdate:start': model.start.onChange,
       end: model.end.end,
       'onUpdate:end': model.end.onChange
-    }} />
+    }} style={{ width: `${size.width}px` }} />
   },
   model: {
     start: '起始绑定值字段',
     end: '截止绑定字段'
+  },
+  resize: {
+    width: true
   }
 })
