@@ -1,7 +1,7 @@
 import { computed, defineComponent, PropType, ref, reactive } from 'vue';
 import { useModel } from './utils/useModel';
 import { VisualEditorBlock } from './visual-editor-block';
-import './visual-editor.scss'
+import './visualEditor.scss'
 import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEditorConfig, VisualEditorMarkLines, VisualEditorModelValue, VisualDragProvider } from './visual-editor.util';
 import { useVisualCommand } from './utils/visual.command'
 import { createEvent } from './plugins/event';

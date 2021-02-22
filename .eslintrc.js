@@ -16,4 +16,5 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     '@typescript-eslint/no-use-before-define': 'off',
   },
+  ignorePatterns: ['**/*.js'],
 };

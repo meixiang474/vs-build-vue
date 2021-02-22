@@ -1,5 +1,5 @@
 import { VisualDragProvider, VisualEditorBlockData, VisualEditorComponent } from '@/packages/visual-editor.util';
-import { defineComponent, PropType } from '@vue/runtime-core';
+import { defineComponent, PropType } from 'vue';
 
 enum Direction {
   start = 'start',

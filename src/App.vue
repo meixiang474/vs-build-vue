@@ -1,9 +1,9 @@
 <template>
   <div class="app">
     <h1>这个是页面内容</h1>
-    <visual-editor 
-      v-model="jsonData" 
-      :config="visualConfig" 
+    <visual-editor
+      v-model="jsonData"
+      :config="visualConfig"
       :formData="formData"
       :customProps="customProps"
     >
@@ -13,17 +13,17 @@
         </el-button>
       </template> -->
     </visual-editor>
-    <div :style="{textAlign: 'center'}">
-      {{JSON.stringify(formData)}}
+    <div :style="{ textAlign: 'center' }">
+      {{ JSON.stringify(formData) }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { VisualEditor } from './packages';
-import {visualConfig} from './packages/visual.config'
-import jsonData from './data.json';
+import { VisualEditor } from "./packages";
+import { visualConfig } from "./packages/visual.config";
+import jsonData from "./data.json";
 
 export default defineComponent({
   name: "App",
@@ -34,23 +34,20 @@ export default defineComponent({
     return {
       visualConfig,
       jsonData,
-      formData: {
-        username: 'admin'
-      },
+      formData: {},
       customProps: {
         subBtn: {
           onClick: () => {
-            this.$notify({message: '执行表单数据校验以及调教到服务器的动作'})
+            this.$notify({ message: "执行表单数据校验以及调教到服务器的动作" });
           },
-         
         },
         myInput: {
           onChange: () => {
-            console.log(1)
-          }
-        }
-      }
-    }
+            console.log(1);
+          },
+        },
+      },
+    };
   },
 });
 </script>
