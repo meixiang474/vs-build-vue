@@ -6,7 +6,7 @@ import { createNewBlock, VisualEditorBlockData, VisualEditorComponent, VisualEdi
 import { useVisualCommand } from './utils/visual.command'
 import { createEvent } from './plugins/event';
 import { $$dialog } from './utils/dialog-service';
-import { ElMessageBox } from 'element-plus'
+import { ElMessageBox, ElTooltip } from 'element-plus'
 import { $$dropdown } from './utils/dropdown-service'
 import { VisualOperatorEditor } from './utils/visual-editor-operator';
 
@@ -14,6 +14,10 @@ import { VisualOperatorEditor } from './utils/visual-editor-operator';
 
 export const VisualEditor = defineComponent({
   props: {
+    isProduction: {
+      type: Boolean,
+      default: false
+    },
     modelValue: {
       type: Object as PropType<VisualEditorModelValue>,
       required: true
@@ -58,7 +62,7 @@ export const VisualEditor = defineComponent({
     const state = reactive({
       selectBlock: computed(() => (dataModel.value.blocks || [])[selectIndex.value]),
       editing: true,  // 当前是否正在编辑
-      preview: false   // 当前是否关闭了编辑器
+      preview: true   // 当前是否关闭了编辑器
     })
 
     const classes = computed(() => [
@@ -406,7 +410,6 @@ export const VisualEditor = defineComponent({
       }
     ]
 
-
     return () => (
       <>
         <div class="visual-editor-container"
@@ -422,10 +425,12 @@ export const VisualEditor = defineComponent({
               customProps={props.customProps}
             />
           ))}
-          <div class="vue-visual-container-edit-button" onClick={methods.openEdit}>
-            <i class="iconfont icon-edit" />
-            <span>编辑组件</span>
-          </div>
+          {!props.isProduction && (
+            <div class="vue-visual-container-edit-button" onClick={methods.openEdit}>
+              <i class="iconfont icon-edit" />
+              <span>编辑组件</span>
+            </div>
+          )}
         </div>
         <div class={classes.value} v-show={!state.preview}>
           <div class="visual-editor-menu">
@@ -453,9 +458,9 @@ export const VisualEditor = defineComponent({
                 </div>
               )
               return btn.tip ? (
-                <el-tooltip effect="dark" content={btn.tip} placement="bottom">
+                <ElTooltip {...{ effect: 'dark' } as any} content={btn.tip} placement="bottom">
                   {content}
-                </el-tooltip>
+                </ElTooltip>
               ) : content
             })}
           </div>

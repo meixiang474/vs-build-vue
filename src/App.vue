@@ -2,6 +2,7 @@
   <div class="app">
     <h1>这个是页面内容</h1>
     <visual-editor
+      :isProduction="false"
       v-model="jsonData"
       :config="visualConfig"
       :formData="formData"
@@ -21,7 +22,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { VisualEditor } from "./packages";
+import {VisualEditor} from './packages'
 import { visualConfig } from "./packages/visual.config";
 import jsonData from "./data.json";
 
