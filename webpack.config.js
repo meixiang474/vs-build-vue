@@ -10,13 +10,18 @@ module.exports = {
   entry: {
     index: './src/packages/index.tsx',
   },
-  externals: {
-    vue: {
-      root: 'Vue',
-      commonjs: 'vue',
-      commonjs2: 'vue',
+  externals: [
+    {
+      vue: {
+        root: 'Vue',
+        commonjs: 'vue',
+        commonjs2: 'vue',
+      },
     },
-  },
+    /^deepcopy$/,
+    /^core-js$/,
+    /^element-plus$/,
+  ],
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
